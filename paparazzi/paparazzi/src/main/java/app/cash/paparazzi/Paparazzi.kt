@@ -71,12 +71,17 @@ import com.android.layoutlib.bridge.BridgeRenderSession
 import com.android.layoutlib.bridge.impl.RenderAction
 import com.android.layoutlib.bridge.impl.RenderSessionImpl
 import com.android.resources.ScreenRound
+import com.android.tools.idea.validator.LayoutValidator
+import com.android.tools.idea.validator.ValidatorData.Level
+import com.android.tools.idea.validator.ValidatorData.Policy
+import com.android.tools.idea.validator.ValidatorData.Type
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
 import java.awt.geom.Ellipse2D
 import java.awt.image.BufferedImage
 import java.util.Date
+import java.util.EnumSet
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.ContinuationInterceptor
 
@@ -303,6 +308,7 @@ class Paparazzi @JvmOverloads constructor(
 
             val image = bridgeRenderSession.image
             frameHandler.handle(scaleImage(frameImage(image)))
+            validateLayoutAccessibility(modifiedView, image)
           }
         }
       } finally {
@@ -387,6 +393,26 @@ class Paparazzi @JvmOverloads constructor(
   private fun scaleImage(image: BufferedImage): BufferedImage {
     val scale = ImageUtils.getThumbnailScale(image)
     return ImageUtils.scale(image, scale, scale)
+  }
+
+  private fun validateLayoutAccessibility(view: View, image: BufferedImage) {
+    LayoutValidator.updatePolicy(
+      Policy(
+        EnumSet.of(Type.ACCESSIBILITY),
+        EnumSet.of(Level.ERROR, Level.WARNING)
+      )
+    )
+
+    val validationResults = LayoutValidator.validate(view, image, 1f, 1f)
+
+    validationResults.issues.forEach { issue ->
+      logger.warning(
+        format = "Accessibility issue ({0}): {1} \nSee: {2}",
+        issue.mCategory,
+        issue.mMsg,
+        issue.mHelpfulUrl
+      )
+    }
   }
 
   private fun Description.toTestName(): TestName {

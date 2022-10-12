@@ -54,6 +54,17 @@ class PaparazziTest {
   }
 
   @Test
+  fun simpleSnapshot() {
+    val view = TextView(paparazzi.context).apply {
+      text = "Accessibility"
+      setTextColor(Color.WHITE)
+      setBackgroundColor(Color.WHITE)
+    }
+
+    paparazzi.snapshot(view)
+  }
+
+  @Test
   fun resetsAnimationHandler() {
     assertThat(AnimationHandler.sAnimatorHandler.get()).isNull()
 

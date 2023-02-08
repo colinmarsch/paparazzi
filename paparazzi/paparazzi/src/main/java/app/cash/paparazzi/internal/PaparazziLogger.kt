@@ -27,8 +27,9 @@ import java.util.logging.Logger.getLogger
 /**
  * This logger delegates to java.util.Logging.
  */
-internal class PaparazziLogger : ILayoutLog, ILogger {
-  private val logger: Logger = getLogger(Paparazzi::class.java.name)
+internal class PaparazziLogger(
+  private val logger: Logger = getLogger(Paparazzi::class.java.name),
+) : ILayoutLog, ILogger {
   private val errors = mutableListOf<Throwable>()
 
   override fun error(

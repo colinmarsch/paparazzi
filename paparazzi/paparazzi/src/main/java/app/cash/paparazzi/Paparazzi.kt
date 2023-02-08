@@ -73,6 +73,7 @@ import java.awt.geom.Ellipse2D
 import java.awt.image.BufferedImage
 import java.util.Date
 import java.util.concurrent.TimeUnit
+import java.util.logging.Logger
 
 class Paparazzi @JvmOverloads constructor(
   private val environment: Environment = detectEnvironment(),
@@ -84,9 +85,15 @@ class Paparazzi @JvmOverloads constructor(
   private val snapshotHandler: SnapshotHandler = determineHandler(maxPercentDifference),
   private val renderExtensions: Set<RenderExtension> = setOf(),
   private val supportsRtl: Boolean = false,
-  private val showSystemUi: Boolean = true
+  private val showSystemUi: Boolean = true,
+  internalLogger: Logger? = null,
 ) : TestRule {
-  private val logger = PaparazziLogger()
+  private val logger = if (internalLogger != null) {
+    PaparazziLogger(internalLogger)
+  } else {
+    PaparazziLogger()
+  }
+
   private lateinit var renderSession: RenderSessionImpl
   private lateinit var bridgeRenderSession: RenderSession
   private var testName: TestName? = null

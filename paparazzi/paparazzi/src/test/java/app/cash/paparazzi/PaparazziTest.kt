@@ -32,11 +32,22 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
+import java.text.MessageFormat
 import java.util.concurrent.TimeUnit
+import java.util.logging.Level
+import java.util.logging.Logger
 
 class PaparazziTest {
+  private val fakeLogger = object : Logger(null, null) {
+    val log = mutableListOf<Pair<String, String>>()
+
+    override fun log(level: Level, format: String, vararg args: Any) {
+      log += Pair(level.name, MessageFormat(format).format(args).toString())
+    }
+  }
+
   @get:Rule
-  val paparazzi = Paparazzi()
+  val paparazzi = Paparazzi(internalLogger = fakeLogger)
 
   @Test
   fun drawCalls() {

@@ -23,6 +23,7 @@ import android.text.StaticLayout
 import android.text.TextPaint
 import android.text.TextUtils
 import android.util.TypedValue
+import android.view.View
 import android.widget.FrameLayout
 import app.cash.paparazzi.accessibility.RenderSettings.DEFAULT_TEXT_COLOR
 import app.cash.paparazzi.accessibility.RenderSettings.toColorInt
@@ -44,6 +45,8 @@ internal class AccessibilityOverlayDetailsView(context: Context) : FrameLayout(c
   private val rectSize = context.dip(RenderSettings.DEFAULT_RECT_SIZE.toFloat())
   private val cornerRadius = rectSize / 4f
 
+  internal var contentView: View? = null
+
   init {
     // Required for onDraw to be called
     setWillNotDraw(false)
@@ -55,6 +58,15 @@ internal class AccessibilityOverlayDetailsView(context: Context) : FrameLayout(c
     accessibilityElements.clear()
     accessibilityElements += elements
     invalidate()
+  }
+
+  override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+    // Match the measured height and width of the contentView
+    val desiredWidth = contentView?.measuredWidth ?: MeasureSpec.getSize(widthMeasureSpec)
+    val desiredHeight = contentView?.measuredHeight ?: MeasureSpec.getSize(heightMeasureSpec)
+
+    // Set the dimensions of OverlayDetailsView to match contentView
+    setMeasuredDimension(desiredWidth, desiredHeight)
   }
 
   override fun draw(canvas: Canvas) {

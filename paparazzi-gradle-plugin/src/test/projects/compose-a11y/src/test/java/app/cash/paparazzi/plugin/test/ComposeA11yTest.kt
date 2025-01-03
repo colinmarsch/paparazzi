@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import app.cash.paparazzi.DeviceConfig
 import app.cash.paparazzi.Paparazzi
 import app.cash.paparazzi.accessibility.AccessibilityRenderExtension
+import com.android.ide.common.rendering.api.SessionParams.RenderingMode.SHRINK
 import org.junit.Rule
 import org.junit.Test
 
@@ -141,5 +143,16 @@ class ComposeA11yTest {
     }
 
     paparazzi.snapshot(view)
+  }
+
+  @Test
+  fun `verify SHRINK renderingMode succeeds`() {
+    paparazzi.unsafeUpdateConfig(renderingMode = SHRINK)
+
+    paparazzi.snapshot {
+      Button(onClick = {}) {
+        Text("Submit")
+      }
+    }
   }
 }

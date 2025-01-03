@@ -56,7 +56,9 @@ public class AccessibilityRenderExtension : RenderExtension {
 
       addView(contentView, LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT, 1f))
 
-      val overlayDetailsView = AccessibilityOverlayDetailsView(context)
+      val overlayDetailsView = AccessibilityOverlayDetailsView(context).apply {
+        this.contentView = contentView
+      }
       addView(overlayDetailsView, LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT, 1f))
 
       val overlayDrawable = AccessibilityOverlayDrawable()
